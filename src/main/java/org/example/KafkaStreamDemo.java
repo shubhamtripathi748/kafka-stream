@@ -21,6 +21,8 @@ public class KafkaStreamDemo
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,Serdes.String().getClass());
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
         StreamsBuilder builder = new StreamsBuilder();
+       // builder.
+
         //Stream from kafka <Key,Value>
         KStream<String,String>kStream= builder.stream("word-count-input");
         //MapValue lower case
@@ -28,10 +30,11 @@ public class KafkaStreamDemo
         //flatMapValues
                 .flatMapValues(word-> Arrays.asList(word.split(" ")))
        //selectKey==>this will arrange key that copied as value
-                .selectKey((key,value)->(value))
+                .selectKey((key,value)->(value))//.peek((key,value)->System.out.println("key "+key+"value"+value))
         //GroupByKey before aggregation
                 .groupByKey()
-        //count
+
+        //count //we can also use aggregate with adder+init value+new value for bank balance applicaion
                 .count();
         //to data written to kafka topic
         ktable.toStream().to("word-count-output", Produced.with(Serdes.String(),Serdes.Long()));
